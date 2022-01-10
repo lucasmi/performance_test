@@ -26,7 +26,7 @@ const _accountNumberMap = {
 };
 
 const fnSendRequest = async (path) => {
-    const { body } = await undici.request(`http://localhost:8080${path}`);
+    const { body } = await undici.request(`http://localhost:9090${path}`);
     for await (const data of body) {
         return data.toString("utf-8");
     }
@@ -59,6 +59,7 @@ app.get("/:accountNumber/balance", (req, res) => {
     }
 });
 
+/*
 app.get("/:accountNumber/card", (req, res) => {
     const _data = _accountNumberMap[req.params.accountNumber];
     if (_data && _data.card) {
@@ -72,5 +73,6 @@ app.get("/:accountNumber/status", (req, res) => {
         res.send(JSON.stringify(_data.status));
     }
 });
+*/
 
 app.listen(8080);
