@@ -11,6 +11,8 @@ const _accountNumberMap = {
             "code": "C01",
             "description": "Canceled"
         },
+        "fullname": "Coffin Joe",
+        "age": 99,
     },
     "2": {
         "card": {
@@ -21,6 +23,8 @@ const _accountNumberMap = {
             "code": "V99",
             "description": "Valid",
         },
+        "fullname": "Bill Power",
+        "age": 12,
     },    
 };
 
@@ -45,5 +49,24 @@ app.get("/:accountNumber/status", (req, res) => {
         }, 100);
     }
 });
+
+app.get("/:accountNumber/name", (req, res) => {
+    const _data = _accountNumberMap[req.params.accountNumber];
+    if (_data && _data.fullname) {
+        setTimeout(() => {
+            res.send({name: _data.fullname});
+        }, 100);
+    }
+});
+
+app.get("/:accountNumber/age", (req, res) => {
+    const _data = _accountNumberMap[req.params.accountNumber];
+    if (_data && _data.age) {
+        setTimeout(() => {
+            res.send({age: _data.age});
+        }, 100);
+    }
+});
+
 
 app.listen(9090);
