@@ -32,13 +32,11 @@ const fnSendRequest = async (path) => {
     }
 };
 
-const _fnProcessGetBalance = async (_cardData, _statusData, _nameData, _ageData, _accountBalance) => {
+const _fnProcessGetBalance = async (_cardData, _statusData, _accountBalance) => {
     return {
         cardNumber: JSON.parse(_cardData).cardNumber,
         balance: _accountBalance,
         status: JSON.parse(_statusData).code,
-        fullName: JSON.parse(_nameData).name,
-        age: JSON.parse(_ageData).age,
     }
 };
 
@@ -55,13 +53,8 @@ app.get("/:accountNumber/balance", (req, res) => {
     const _data = _accountNumberMap[_accountNumber];
     if (_data) {
         const _accountBalance = _data.balance;
-        Promise.all([
-            fnSendRequest(`/${_accountNumber}/card`), 
-            fnSendRequest(`/${_accountNumber}/status`),
-            fnSendRequest(`/${_accountNumber}/name`),
-            fnSendRequest(`/${_accountNumber}/age`),
-        ])
-            .then((_data) => _fnProcessGetBalance(_data[0], _data[1], _data[2], _data[3], _accountBalance))
+        Promise.all([fnSendRequest(`/${_accountNumber}/card`), fnSendRequest(`/${_accountNumber}/status`)])
+            .then((_data) => _fnProcessGetBalance(_data[0], _data[1], _accountBalance))
             .then((_data) => _fnSendResponse(_data, res))
         .catch((error) => console.log(error));
     }
