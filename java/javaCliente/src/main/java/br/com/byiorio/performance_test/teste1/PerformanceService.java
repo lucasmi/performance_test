@@ -8,19 +8,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import br.com.byiorio.performance_test.infra.WebClientConfig;
 import reactor.core.publisher.Mono;
 
 @Service
 public class PerformanceService {
+
     @Autowired
     RestTemplate restTemplate;
 
     @Autowired
-    WebClient.Builder webClientBuilder;
-
-    @Autowired
-    WebClientConfig webClientConfig;
+    public WebClient httpClientLocalhost;
 
     public BalanceResponse restemplate(Integer accountNumber) {
         BalanceResponse balanceResponse = new BalanceResponse();
@@ -59,17 +56,15 @@ public class PerformanceService {
 
     public Mono<BalanceResponse> webClientNonBlock(Integer accountNumber) {
 
-        Mono<CardResponse> card = webClientBuilder
-                .build()
+        Mono<CardResponse> card = httpClientLocalhost
                 .get()
-                .uri("http://localhost:9090/".concat(accountNumber.toString()).concat("/card"))
+                .uri("/".concat(accountNumber.toString()).concat("/card"))
                 .retrieve()
                 .bodyToMono(CardResponse.class);
 
-        Mono<StatusResponse> status = webClientBuilder
-                .build()
+        Mono<StatusResponse> status = httpClientLocalhost
                 .get()
-                .uri("http://localhost:9090/".concat(accountNumber.toString()).concat("/status"))
+                .uri("/".concat(accountNumber.toString()).concat("/status"))
                 .retrieve()
                 .bodyToMono(StatusResponse.class);
 
@@ -94,17 +89,15 @@ public class PerformanceService {
     public BalanceResponse webClientBlock(Integer accountNumber) {
         BalanceResponse balanceResponse = new BalanceResponse();
 
-        Mono<CardResponse> card = webClientBuilder
-                .build()
+        Mono<CardResponse> card = httpClientLocalhost
                 .get()
-                .uri("http://localhost:9090/".concat(accountNumber.toString()).concat("/card"))
+                .uri("/".concat(accountNumber.toString()).concat("/card"))
                 .retrieve()
                 .bodyToMono(CardResponse.class);
 
-        Mono<StatusResponse> status = webClientBuilder
-                .build()
+        Mono<StatusResponse> status = httpClientLocalhost
                 .get()
-                .uri("http://localhost:9090/".concat(accountNumber.toString()).concat("/status"))
+                .uri("/".concat(accountNumber.toString()).concat("/status"))
                 .retrieve()
                 .bodyToMono(StatusResponse.class);
 

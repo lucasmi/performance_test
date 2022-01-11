@@ -30,7 +30,7 @@ public class RestemplateConfig {
         requestFactory.setConnectionRequestTimeout(20000);
         requestFactory.setReadTimeout(20000);
 
-        return new RestTemplate();
+        return new RestTemplate(requestFactory);
     }
 
 }
