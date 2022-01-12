@@ -13,16 +13,6 @@ public class ServerController {
     @Autowired
     ServerService cardService;
 
-    @GetMapping("/v1/{accountNumber}/card")
-    public Mono<CardResponse> cardv1(@PathVariable(value = "accountNumber") String accountNumber) {
-        return cardService.processCard(accountNumber);
-    }
-
-    @GetMapping("/v1/{accountNumber}/status")
-    public Mono<StatusResponse> statusv1(@PathVariable(value = "accountNumber") String accountNumber) {
-        return cardService.processStatus(accountNumber);
-    }
-
     @GetMapping("/{accountNumber}/card")
     public CardResponse card(@PathVariable(value = "accountNumber") String accountNumber) {
         return cardService.processCardNormal(accountNumber);
