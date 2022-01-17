@@ -7,19 +7,19 @@ Ter instalado
 
 ## Execução do java
 
-- Entrar na pasta javaServer
+1. Entrar na pasta javaServer
 
--  Executar "mvn clean install"
+2. Executar "mvn clean install"
 
--  Subir primeiro servidor "java -jar .\target\server-0.0.1-SNAPSHOT.jar --server.port=9090"
+3. Subir primeiro servidor "java -jar .\target\server-0.0.1-SNAPSHOT.jar --server.port=9090"
 
-- Subir segundo servidor "java -jar .\target\server-0.0.1-SNAPSHOT.jar --server.port=9091"
+4. Em outro terminal repetir passo 1 e subir o segundo servidor com o comando "java -jar .\target\server-0.0.1-SNAPSHOT.jar --server.port=9091"
 
--  Em outro terminal entrar na pasta javaCliente
+5. Em outro terminal entrar na pasta javaCliente
 
-- Executar "mvn clean install"
+6. Executar "mvn clean install"
 
--  Executar "java -jar .\target\performance_test-0.0.1-SNAPSHOT.jar --server.port=8080"
+7.  Executar "java -jar .\target\performance_test-0.0.1-SNAPSHOT.jar --server.port=8080"
 
 ## Execução do teste
 
@@ -43,13 +43,13 @@ Ter instalado
 
 ## Execução do Node
 
-- Entrar na pasta nodejs
+1. Entrar na pasta nodejs
 
-- Executar o comando "npm install"
+2. Executar o comando "npm install"
 
-- Executar o comando "node cliente.js"
+3. Executar o comando "node cliente.js"
 
-- Em outro terminal executar o comando "node server.js"
+4. Em outro terminal executar o comando "node server.js"
 
 ## Teste sem pipeline
 - Executar o comando "autocannon --debug -c 100 -a 1000 http://localhost:8080/1/balance"
