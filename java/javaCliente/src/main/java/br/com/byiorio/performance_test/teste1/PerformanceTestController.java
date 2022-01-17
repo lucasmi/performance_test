@@ -29,4 +29,9 @@ public class PerformanceTestController {
     public Mono<BalanceResponse> webClient(@PathVariable(value = "accountNumber") Integer accountNumber) {
         return performanceService.webClientNonBlock(accountNumber);
     }
+
+    @GetMapping(path = "/v4/{accountNumber}/balance")
+    public BalanceResponse feing(@PathVariable(value = "accountNumber") Integer accountNumber) {
+        return performanceService.feignTest(accountNumber);
+    }
 }

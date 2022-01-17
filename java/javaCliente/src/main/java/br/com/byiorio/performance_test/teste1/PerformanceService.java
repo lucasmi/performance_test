@@ -17,7 +17,10 @@ public class PerformanceService {
     RestTemplate restTemplate;
 
     @Autowired
-    public WebClient httpClientLocalhost;
+    WebClient httpClientLocalhost;
+
+    @Autowired
+    FeignTesteClient feignClient;
 
     public BalanceResponse restemplate(Integer accountNumber) {
         BalanceResponse balanceResponse = new BalanceResponse();
@@ -103,6 +106,31 @@ public class PerformanceService {
 
         CardResponse cardResponse = card.block();
         StatusResponse statusResponse = status.block();
+
+        if (cardResponse != null) {
+            balanceResponse.setCardNumber(cardResponse.getCardNumber());
+        }
+
+        if (statusResponse != null) {
+            balanceResponse.setStatus(statusResponse.getCode());
+        }
+
+        // ADiciona o blance
+        BigDecimal balance;
+        if (accountNumber == 1) {
+            balance = new BigDecimal("300035");
+        } else {
+            balance = new BigDecimal("099");
+        }
+        balanceResponse.setBalance(balance.movePointLeft(2));
+
+        return balanceResponse;
+    }
+
+    public BalanceResponse feignTest(Integer accountNumber) {
+        BalanceResponse balanceResponse = new BalanceResponse();
+        CardResponse cardResponse = feignClient.getCard(accountNumber);
+        StatusResponse statusResponse = feignClient.getStatus(accountNumber);
 
         if (cardResponse != null) {
             balanceResponse.setCardNumber(cardResponse.getCardNumber());
