@@ -4,6 +4,7 @@ Ter instalado
 - Apache Maven 3.8.4
 - Java openjdk 17 2021-09-14
 - Node autocannon v7.5.1
+- Uso do Http 1.1
 
 ## Execução do java
 
