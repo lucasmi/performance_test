@@ -22,20 +22,21 @@ public class PerformanceService {
     @Autowired
     FeignTesteClient feignClient;
 
-    public BalanceResponse restemplate(Integer accountNumber) {
+    public BalanceResponse usandoRestemplate(Integer accountNumber) {
         BalanceResponse balanceResponse = new BalanceResponse();
 
-        // Primeiro endpoint
+        // Primeira Chamada
         ResponseEntity<CardResponse> responseCardEntity = restTemplate
                 .getForEntity("http://localhost:9090/".concat(accountNumber.toString()).concat("/card"),
                         CardResponse.class);
 
         CardResponse cardResponse = responseCardEntity.getBody();
+
         if (cardResponse != null) {
             balanceResponse.setCardNumber(cardResponse.getCardNumber());
         }
 
-        // Segundo endpoint
+        // Segunda chamada
         ResponseEntity<StatusResponse> responseStatusEntity = restTemplate
                 .getForEntity("http://localhost:9090/".concat(accountNumber.toString()).concat("/status"),
                         StatusResponse.class);
@@ -45,111 +46,106 @@ public class PerformanceService {
             balanceResponse.setStatus(statusResponse.getCode());
         }
 
-        // ADiciona o blance
-        BigDecimal balance;
-        if (accountNumber == 1) {
-            balance = new BigDecimal("300035");
-        } else {
-            balance = new BigDecimal("099");
-        }
-        balanceResponse.setBalance(balance.movePointLeft(2));
+        // Adiciona o balance
+        balanceResponse.setBalance(getBalance(accountNumber));
 
         return balanceResponse;
     }
 
-    public Mono<BalanceResponse> webClientNonBlock(Integer accountNumber) {
+    public BalanceResponse usandoWebClientComBlock(Integer accountNumber) {
+        BalanceResponse balanceResponse = new BalanceResponse();
 
+        // Primeira Chamada
         Mono<CardResponse> card = httpClientLocalhost
                 .get()
                 .uri("/".concat(accountNumber.toString()).concat("/card"))
                 .retrieve()
                 .bodyToMono(CardResponse.class);
 
+        CardResponse cardResponse = card.block();
+
+        if (cardResponse != null) {
+            balanceResponse.setCardNumber(cardResponse.getCardNumber());
+        }
+
+        // Segunda Chamada
         Mono<StatusResponse> status = httpClientLocalhost
                 .get()
                 .uri("/".concat(accountNumber.toString()).concat("/status"))
                 .retrieve()
                 .bodyToMono(StatusResponse.class);
 
-        // Executa em paralelo
+        StatusResponse statusResponse = status.block();
+
+        if (statusResponse != null) {
+            balanceResponse.setStatus(statusResponse.getCode());
+        }
+
+        // Adiciona o balance
+        balanceResponse.setBalance(getBalance(accountNumber));
+
+        return balanceResponse;
+    }
+
+    public Mono<BalanceResponse> usandoWebClientSemBlock(Integer accountNumber) {
+
+        // Primeira Chamada
+        Mono<CardResponse> card = httpClientLocalhost
+                .get()
+                .uri("/".concat(accountNumber.toString()).concat("/card"))
+                .retrieve()
+                .bodyToMono(CardResponse.class);
+
+        // Segunda Chamada
+        Mono<StatusResponse> status = httpClientLocalhost
+                .get()
+                .uri("/".concat(accountNumber.toString()).concat("/status"))
+                .retrieve()
+                .bodyToMono(StatusResponse.class);
+
+        // Execução em paralelo
         return Mono.zip(card, status)
                 .map(respostas -> {
-                    BigDecimal balance;
-
-                    if (accountNumber == 1) {
-                        balance = new BigDecimal("300035");
-                    } else {
-                        balance = new BigDecimal("099");
-                    }
 
                     return BalanceResponse.builder()
                             .status(respostas.getT2().getCode())
                             .cardNumber(respostas.getT1().getCardNumber())
-                            .balance(balance.movePointLeft(2)).build();
+                            .balance(this.getBalance(accountNumber))
+                            .build();
                 });
     }
 
-    public BalanceResponse webClientBlock(Integer accountNumber) {
+    public BalanceResponse usandoFeign(Integer accountNumber) {
         BalanceResponse balanceResponse = new BalanceResponse();
 
-        Mono<CardResponse> card = httpClientLocalhost
-                .get()
-                .uri("/".concat(accountNumber.toString()).concat("/card"))
-                .retrieve()
-                .bodyToMono(CardResponse.class);
-
-        Mono<StatusResponse> status = httpClientLocalhost
-                .get()
-                .uri("/".concat(accountNumber.toString()).concat("/status"))
-                .retrieve()
-                .bodyToMono(StatusResponse.class);
-
-        CardResponse cardResponse = card.block();
-        StatusResponse statusResponse = status.block();
+        // Primeira Chamada
+        CardResponse cardResponse = feignClient.getCard(accountNumber);
 
         if (cardResponse != null) {
             balanceResponse.setCardNumber(cardResponse.getCardNumber());
         }
 
-        if (statusResponse != null) {
-            balanceResponse.setStatus(statusResponse.getCode());
-        }
-
-        // ADiciona o blance
-        BigDecimal balance;
-        if (accountNumber == 1) {
-            balance = new BigDecimal("300035");
-        } else {
-            balance = new BigDecimal("099");
-        }
-        balanceResponse.setBalance(balance.movePointLeft(2));
-
-        return balanceResponse;
-    }
-
-    public BalanceResponse feignTest(Integer accountNumber) {
-        BalanceResponse balanceResponse = new BalanceResponse();
-        CardResponse cardResponse = feignClient.getCard(accountNumber);
+        // Segunda Chamada
         StatusResponse statusResponse = feignClient.getStatus(accountNumber);
 
-        if (cardResponse != null) {
-            balanceResponse.setCardNumber(cardResponse.getCardNumber());
-        }
-
         if (statusResponse != null) {
             balanceResponse.setStatus(statusResponse.getCode());
         }
 
-        // ADiciona o blance
+        // Adiciona o balance
+        balanceResponse.setBalance(getBalance(accountNumber));
+
+        return balanceResponse;
+    }
+
+    private BigDecimal getBalance(Integer accountNumber) {
         BigDecimal balance;
         if (accountNumber == 1) {
             balance = new BigDecimal("300035");
         } else {
             balance = new BigDecimal("099");
         }
-        balanceResponse.setBalance(balance.movePointLeft(2));
 
-        return balanceResponse;
+        return balance.movePointLeft(2);
     }
-
 }

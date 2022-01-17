@@ -21,7 +21,7 @@ public class RestemplateConfig {
                 .setConnectionManagerShared(true)
                 // .setRedirectStrategy(new LaxRedirectStrategy())
                 // .setConnectionReuseStrategy(NoConnectionReuseStrategy.INSTANCE)
-                .setConnectionManager(poolingConnectionManager)
+                // .setConnectionManager(poolingConnectionManager)
                 .build();
 
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();

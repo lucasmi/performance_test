@@ -16,22 +16,22 @@ public class PerformanceTestController {
 
     @GetMapping(path = "/v1/{accountNumber}/balance")
     public ResponseEntity<BalanceResponse> restTemplate(@PathVariable(value = "accountNumber") Integer accountNumber) {
-        return ResponseEntity.ok(performanceService.restemplate(accountNumber));
+        return ResponseEntity.ok(performanceService.usandoRestemplate(accountNumber));
     }
 
     @GetMapping(path = "/v2/{accountNumber}/balance")
     public ResponseEntity<BalanceResponse> webClientBlock(
             @PathVariable(value = "accountNumber") Integer accountNumber) {
-        return ResponseEntity.ok(performanceService.webClientBlock(accountNumber));
+        return ResponseEntity.ok(performanceService.usandoWebClientComBlock(accountNumber));
     }
 
     @GetMapping(path = "/v3/{accountNumber}/balance")
     public Mono<BalanceResponse> webClient(@PathVariable(value = "accountNumber") Integer accountNumber) {
-        return performanceService.webClientNonBlock(accountNumber);
+        return performanceService.usandoWebClientSemBlock(accountNumber);
     }
 
     @GetMapping(path = "/v4/{accountNumber}/balance")
     public BalanceResponse feing(@PathVariable(value = "accountNumber") Integer accountNumber) {
-        return performanceService.feignTest(accountNumber);
+        return performanceService.usandoFeign(accountNumber);
     }
 }
