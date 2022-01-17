@@ -24,22 +24,22 @@ Ter instalado
 ## Execução do teste
 
 ## Teste sem pipeline
-- Executar o comando "autocannon --debug -c 100 -a 1000 http://localhost:8081/v1/1/balance"
+- Executar o comando "autocannon --debug -c 100 -a 10000 http://localhost:8081/v1/1/balance"
 
-- Executar o comando "autocannon --debug -c 100 -a 1000 http://localhost:8081/v2/1/balance"
+- Executar o comando "autocannon --debug -c 100 -a 10000 http://localhost:8081/v2/1/balance"
 
-- Executar o comando "autocannon --debug -c 100 -a 1000 http://localhost:8081/v3/1/balance"
+- Executar o comando "autocannon --debug -c 100 -a 10000 http://localhost:8081/v3/1/balance"
 
-- Executar o comando "autocannon --debug -c 100 -a 1000 http://localhost:8081/v4/1/balance"
+- Executar o comando "autocannon --debug -c 100 -a 10000 http://localhost:8081/v4/1/balance"
 
 ## Teste com 10 pipes
 - Executar o comando "autocannon --debug -c 100 -a 1000 http://localhost:8081/v1/1/balance"
 
-- Executar o comando "autocannon --debug -c 100 -p 10 -a 1000 http://localhost:8081/v2/1/balance"
+- Executar o comando "autocannon --debug -c 100 -p 10 -a 10000 http://localhost:8081/v2/1/balance"
 
-- Executar o comando "autocannon --debug -c 100 -p 10 -a 1000 http://localhost:8081/v3/1/balance"
+- Executar o comando "autocannon --debug -c 100 -p 10 -a 10000 http://localhost:8081/v3/1/balance"
 
-- Executar o comando "autocannon --debug -c 100 -p 10 -a 1000 http://localhost:8081/v4/1/balance"
+- Executar o comando "autocannon --debug -c 100 -p 10 -a 10000 http://localhost:8081/v4/1/balance"
 
 ## Execução do Node
 
@@ -52,7 +52,7 @@ Ter instalado
 4. Em outro terminal executar o comando "node server.js"
 
 ## Teste sem pipeline
-- Executar o comando "autocannon --debug -c 100 -a 1000 http://localhost:8080/1/balance"
+- Executar o comando "autocannon --debug -c 100 -a 10000 http://localhost:8080/1/balance"
 
 ## Teste com 10 pipes
-- Executar o comando "autocannon --debug -c 100 -p 10 -a 1000 http://localhost:8080/1/balance"
+- Executar o comando "autocannon --debug -c 100 -p 10 -a 10000 http://localhost:8080/1/balance"
