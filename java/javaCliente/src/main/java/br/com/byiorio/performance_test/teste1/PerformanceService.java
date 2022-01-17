@@ -13,6 +13,9 @@ import reactor.core.publisher.Mono;
 @Service
 public class PerformanceService {
 
+    private static final String HTTP_LOCALHOST_9090 = "http://localhost:9090/";
+    private static final String HTTP_LOCALHOST_9091 = "http://localhost:9091/";
+
     @Autowired
     RestTemplate restTemplate;
 
@@ -20,14 +23,17 @@ public class PerformanceService {
     WebClient httpClientLocalhost;
 
     @Autowired
-    FeignTesteClient feignClient;
+    FeignCardClient feignCardClient;
+
+    @Autowired
+    FeignStatusClient feignStatusClient;
 
     public BalanceResponse usandoRestemplate(Integer accountNumber) {
         BalanceResponse balanceResponse = new BalanceResponse();
 
         // Primeira Chamada
         ResponseEntity<CardResponse> responseCardEntity = restTemplate
-                .getForEntity("http://localhost:9090/".concat(accountNumber.toString()).concat("/card"),
+                .getForEntity(HTTP_LOCALHOST_9090.concat(accountNumber.toString()).concat("/card"),
                         CardResponse.class);
 
         CardResponse cardResponse = responseCardEntity.getBody();
@@ -38,7 +44,7 @@ public class PerformanceService {
 
         // Segunda chamada
         ResponseEntity<StatusResponse> responseStatusEntity = restTemplate
-                .getForEntity("http://localhost:9090/".concat(accountNumber.toString()).concat("/status"),
+                .getForEntity(HTTP_LOCALHOST_9091.concat(accountNumber.toString()).concat("/status"),
                         StatusResponse.class);
 
         StatusResponse statusResponse = responseStatusEntity.getBody();
@@ -58,7 +64,7 @@ public class PerformanceService {
         // Primeira Chamada
         Mono<CardResponse> card = httpClientLocalhost
                 .get()
-                .uri("/".concat(accountNumber.toString()).concat("/card"))
+                .uri(HTTP_LOCALHOST_9090.concat(accountNumber.toString()).concat("/card"))
                 .retrieve()
                 .bodyToMono(CardResponse.class);
 
@@ -71,7 +77,7 @@ public class PerformanceService {
         // Segunda Chamada
         Mono<StatusResponse> status = httpClientLocalhost
                 .get()
-                .uri("/".concat(accountNumber.toString()).concat("/status"))
+                .uri(HTTP_LOCALHOST_9091.concat(accountNumber.toString()).concat("/status"))
                 .retrieve()
                 .bodyToMono(StatusResponse.class);
 
@@ -92,14 +98,14 @@ public class PerformanceService {
         // Primeira Chamada
         Mono<CardResponse> card = httpClientLocalhost
                 .get()
-                .uri("/".concat(accountNumber.toString()).concat("/card"))
+                .uri(HTTP_LOCALHOST_9090.concat(accountNumber.toString()).concat("/card"))
                 .retrieve()
                 .bodyToMono(CardResponse.class);
 
         // Segunda Chamada
         Mono<StatusResponse> status = httpClientLocalhost
                 .get()
-                .uri("/".concat(accountNumber.toString()).concat("/status"))
+                .uri(HTTP_LOCALHOST_9091.concat(accountNumber.toString()).concat("/status"))
                 .retrieve()
                 .bodyToMono(StatusResponse.class);
 
@@ -119,14 +125,14 @@ public class PerformanceService {
         BalanceResponse balanceResponse = new BalanceResponse();
 
         // Primeira Chamada
-        CardResponse cardResponse = feignClient.getCard(accountNumber);
+        CardResponse cardResponse = feignCardClient.getCard(accountNumber);
 
         if (cardResponse != null) {
             balanceResponse.setCardNumber(cardResponse.getCardNumber());
         }
 
         // Segunda Chamada
-        StatusResponse statusResponse = feignClient.getStatus(accountNumber);
+        StatusResponse statusResponse = feignStatusClient.getStatus(accountNumber);
 
         if (statusResponse != null) {
             balanceResponse.setStatus(statusResponse.getCode());
