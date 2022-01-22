@@ -1,3 +1,6 @@
+# Mostrando o funcionamento
+https://www.byiorio.com.br/blog/1
+
 ## Pré requisitpos
 Ter instalado
 - Node  v16.13.1
