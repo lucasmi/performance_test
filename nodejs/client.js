@@ -22,7 +22,7 @@ const _accountNumberMap = {
             "code": "V99",
             "description": "Valid",
         },
-    },    
+    },
 };
 
 const fnSendRequest = async (path) => {
@@ -56,8 +56,14 @@ app.get("/:accountNumber/balance", (req, res) => {
         Promise.all([fnSendRequest(`/${_accountNumber}/card`), fnSendRequest(`/${_accountNumber}/status`)])
             .then((_data) => _fnProcessGetBalance(_data[0], _data[1], _accountBalance))
             .then((_data) => _fnSendResponse(_data, res))
-        .catch((error) => console.log(error));
+            .catch((error) => console.log(error));
     }
 });
 
-app.listen(8080);
+app.listen(8080, "0.0.0.0", (err, address) => {
+    if (err){
+        app.log.error(err);
+        process.exit(1);
+    }
+    console.log("Started..." + address)
+});
