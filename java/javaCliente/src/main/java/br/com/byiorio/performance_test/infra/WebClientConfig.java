@@ -1,38 +1,40 @@
 package br.com.byiorio.performance_test.infra;
 
+import java.time.Duration;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 
 @Configuration
 public class WebClientConfig {
-    @Bean
-    public WebClient httpClientLocalhost() {
-        ConnectionProvider connProvider = ConnectionProvider.builder("webclient-conn-pool")
-                .maxConnections(10000)
-                // .pendingAcquireTimeout(Duration.ofMillis(20000L))
-                // .pendingAcquireMaxCount(10000)
-                // .maxIdleTime(Duration.ofMillis(5000L))
-                // .maxLifeTime(Duration.ofMillis(5000L))
-                .build();
+        private final Integer SECONDS = 1;
 
-        HttpClient httpClient = HttpClient
-                .create(connProvider)
-                // .create()
-                // .compress(true)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+        @Bean
+        public WebClient httpClientLocalhost() {
+                ConnectionProvider connProvider = ConnectionProvider.builder("webclient-conn-pool")
+                                .maxConnections(10000)
+                                .build();
 
-        ReactorClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
+                HttpClient httpClient = HttpClient
+                                .create(connProvider)
+                                .compress(true)
+                                .responseTimeout(Duration.ofSeconds(SECONDS))
+                                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, SECONDS * 1000)
+                                .doOnConnected(c -> c.addHandlerLast(new ReadTimeoutHandler(SECONDS))
+                                                .addHandlerLast(new WriteTimeoutHandler(SECONDS)));
 
-        return WebClient.builder()
-                // .baseUrl("http://localhost:9090")
-                .clientConnector(connector)
-                // .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
-    }
+                ReactorClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
+
+                return WebClient.builder()
+                                .clientConnector(connector)
+                                .build();
+        }
 }

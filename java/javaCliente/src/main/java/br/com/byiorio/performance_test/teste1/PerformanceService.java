@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -27,6 +29,12 @@ public class PerformanceService {
 
     @Autowired
     FeignStatusClient feignStatusClient;
+
+    @Autowired
+    CircuitBreakerRegistry circuitBreakerRegistry;
+
+    // @Autowired
+    // ReactiveCircuitBreakerFactory reactiveCircuitBreakerFactory;
 
     public BalanceResponse usandoRestemplate(Integer accountNumber) {
         BalanceResponse balanceResponse = new BalanceResponse();
@@ -119,6 +127,36 @@ public class PerformanceService {
                             .balance(this.getBalance(accountNumber))
                             .build();
                 });
+    }
+
+    @CircuitBreaker(name = "externalServiceFoo")
+    public Mono<Object> usandoWebClientSemBlockCircuit(Integer accountNumber) {
+
+        // Primeira Chamada
+        Mono<CardResponse> card = httpClientLocalhost
+                .get()
+                .uri(HTTP_LOCALHOST_9090.concat(accountNumber.toString()).concat("/card"))
+                .retrieve()
+                .bodyToMono(CardResponse.class);
+
+        // Segunda Chamada
+        Mono<StatusResponse> status = httpClientLocalhost
+                .get()
+                .uri(HTTP_LOCALHOST_9091.concat(accountNumber.toString()).concat("/status"))
+                .retrieve()
+                .bodyToMono(StatusResponse.class);
+
+        // Execução em paralelo
+        return Mono.zip(card, status)
+                .map(respostas -> {
+
+                    return BalanceResponse.builder()
+                            .status(respostas.getT2().getCode())
+                            .cardNumber(respostas.getT1().getCardNumber())
+                            .balance(this.getBalance(accountNumber))
+                            .build();
+                });
+
     }
 
     public BalanceResponse usandoFeign(Integer accountNumber) {
