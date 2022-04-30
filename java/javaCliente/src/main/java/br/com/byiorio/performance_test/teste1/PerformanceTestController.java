@@ -1,5 +1,7 @@
 package br.com.byiorio.performance_test.teste1;
 
+import java.util.concurrent.ExecutionException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,5 +35,11 @@ public class PerformanceTestController {
     @GetMapping(path = "/v4/{accountNumber}/balance")
     public BalanceResponse feing(@PathVariable(value = "accountNumber") Integer accountNumber) {
         return performanceService.usandoFeign(accountNumber);
+    }
+
+    @GetMapping(path = "/v5/{accountNumber}/balance")
+    public BalanceResponse feingAsync(@PathVariable(value = "accountNumber") Integer accountNumber)
+            throws InterruptedException, ExecutionException {
+        return performanceService.usandoFeignCompletableFuture(accountNumber);
     }
 }

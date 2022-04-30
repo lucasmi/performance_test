@@ -1,6 +1,9 @@
 package br.com.byiorio.performance_test.teste1;
 
 import java.math.BigDecimal;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +36,8 @@ public class PerformanceService {
     @Autowired
     CircuitBreakerRegistry circuitBreakerRegistry;
 
-    // @Autowired
-    // ReactiveCircuitBreakerFactory reactiveCircuitBreakerFactory;
+    @Autowired
+    ForkJoinPool forkJoinPool;
 
     public BalanceResponse usandoRestemplate(Integer accountNumber) {
         BalanceResponse balanceResponse = new BalanceResponse();
@@ -175,6 +178,28 @@ public class PerformanceService {
         if (statusResponse != null) {
             balanceResponse.setStatus(statusResponse.getCode());
         }
+
+        // Adiciona o balance
+        balanceResponse.setBalance(getBalance(accountNumber));
+
+        return balanceResponse;
+    }
+
+    public BalanceResponse usandoFeignCompletableFuture(Integer accountNumber)
+            throws InterruptedException, ExecutionException {
+        BalanceResponse balanceResponse = new BalanceResponse();
+
+        // Faz a primeira chamada
+        CompletableFuture<CardResponse> cardinfo = CompletableFuture
+                .supplyAsync(() -> feignCardClient.getCard(accountNumber), forkJoinPool);
+
+        // Faz a segunda chamada
+        CompletableFuture<StatusResponse> statusInfo = CompletableFuture
+                .supplyAsync(() -> feignStatusClient.getStatus(accountNumber), forkJoinPool);
+
+        // Juntando as respostas
+        balanceResponse.setCardNumber(cardinfo.get().getCardNumber());
+        balanceResponse.setStatus(statusInfo.get().getCode());
 
         // Adiciona o balance
         balanceResponse.setBalance(getBalance(accountNumber));

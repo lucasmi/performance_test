@@ -15,7 +15,7 @@ import reactor.netty.resources.ConnectionProvider;
 
 @Configuration
 public class WebClientConfig {
-        private final Integer SECONDS = 1;
+        private static final Integer SECONDS = 1;
 
         @Bean
         public WebClient httpClientLocalhost() {
