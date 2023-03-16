@@ -18,19 +18,19 @@ public class RedisRepository {
 	PropertiesConfig config;
 
 	public RedisDTO findById(String cpf) {
-		return this.redisOperation.opsForValue().get("server:".concat(cpf));
+		return this.redisOperation.opsForValue().get("client:".concat(cpf));
 	}
 
 	public RedisDTO findAndDeleteById(String cpf) {
-		return this.redisOperation.opsForValue().getAndDelete("server:".concat(cpf));
+		return this.redisOperation.opsForValue().getAndDelete("client:".concat(cpf));
 	}
 
 	public void save(String cpf, RedisDTO redisDTO) {
-		this.redisOperation.opsForValue().set("server:".concat(cpf), redisDTO,
+		this.redisOperation.opsForValue().set("client:".concat(cpf), redisDTO,
 				Duration.ofSeconds(config.getRedisExpiracao()));
 	}
 
 	public Boolean deleteById(String cpf) {
-		return this.redisOperation.delete("server:".concat(cpf));
+		return this.redisOperation.delete("client:".concat(cpf));
 	}
 }
